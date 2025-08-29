@@ -68,4 +68,29 @@ export class ContactRepository implements IContactRepository {
     if (!contact) throw NotFound('Contact not found');
     return contact;
   }
+
+  async update(
+    id: number,
+    data: { name?: string; address?: string; email?: string; phones?: string[] }
+  ) {
+    const contact = await this.getById(id);
+
+    if (data.phones) {
+      const uniquePhones = Array.from(new Set(data.phones));
+      if (uniquePhones.length !== data.phones.length) {
+        throw BadRequest('Phone numbers must be unique');
+      }
+      await Phone.destroy({ where: { contactId: contact.id } });
+      await Phone.bulkCreate(
+        uniquePhones.map((n) => ({ number: n, contactId: contact.id }))
+      );
+    }
+
+    await contact.update({
+      name: data.name ?? contact.name,
+      address: data.address ?? contact.address,
+      email: data.email ?? contact.email,
+    });
+    return this.getById(id);
+  }
 }

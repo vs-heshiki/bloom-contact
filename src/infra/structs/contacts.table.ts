@@ -64,4 +64,8 @@ export interface IContactRepository {
     phone?: string;
   }): Promise<Contact[]>;
   getById(id: number): Promise<Contact | null>;
+  update(
+    id: number,
+    data: { name?: string; address?: string; email?: string; phones?: string[] }
+  ): Promise<Contact>;
 }

@@ -3,15 +3,21 @@ import {
   CreateContactUseCase,
   GetContactWithWeatherUseCase,
   ListContactUseCase,
+  UpdateContactUseCase,
 } from '@/usecases';
-import { createContactSchema, listFiltersSchema } from './validations';
+import {
+  createContactSchema,
+  listFiltersSchema,
+  updateContactSchema,
+} from './validations';
 import { BadRequest } from '@/errors';
 
 export class ContactController {
   constructor(
     private readonly createContactUseCase: CreateContactUseCase,
     private readonly listContactUseCase: ListContactUseCase,
-    private readonly getContactWithWeatherUseCase: GetContactWithWeatherUseCase
+    private readonly getContactWithWeatherUseCase: GetContactWithWeatherUseCase,
+    private readonly updateContactUseCase: UpdateContactUseCase
   ) {}
 
   async create(req: Request, res: Response, next: NextFunction) {
@@ -52,6 +58,22 @@ export class ContactController {
       if (Number.isNaN(id)) throw BadRequest('Invalid id');
       const data = await this.getContactWithWeatherUseCase.execute(id);
       res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = Number(req.params.id);
+      if (Number.isNaN(id)) throw BadRequest('ID inválido');
+      const { error, value } = updateContactSchema.validate(req.body, {
+        abortEarly: false,
+      });
+      if (error) throw BadRequest('Validation error', error.details);
+
+      const contact = await this.updateContactUseCase.execute(id, value);
+      res.json(contact);
     } catch (err) {
       next(err);
     }
