@@ -1,4 +1,4 @@
-import { ContactController } from '@/controllers/contact.controller';
+import { ContactController } from '@/main/controllers/contact.controller';
 import { ContactRepository } from '@/infra/repositories';
 import { CreateContactUseCase } from '@/usecases';
 
