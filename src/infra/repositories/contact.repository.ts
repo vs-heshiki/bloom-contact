@@ -1,3 +1,4 @@
+import { WhereOptions, Op, Includeable } from 'sequelize';
 import { Phone, Contact, IContactRepository } from '../structs';
 
 export class ContactRepository implements IContactRepository {
@@ -25,5 +26,37 @@ export class ContactRepository implements IContactRepository {
       )
     );
     return { contact, phones };
+  }
+
+  async list(filters?: {
+    name?: string;
+    address?: string;
+    email?: string;
+    phone?: string;
+  }) {
+    const where: WhereOptions = {};
+    if (filters?.name) where['name'] = { [Op.like]: `%${filters.name}%` };
+    if (filters?.address)
+      where['address'] = { [Op.like]: `%${filters.address}%` };
+    if (filters?.email) where['email'] = { [Op.like]: `%${filters.email}%` };
+
+    const include: Includeable[] = [
+      {
+        model: Phone,
+        as: 'phones',
+        where: filters?.phone
+          ? { number: { [Op.like]: `%${filters.phone}%` } }
+          : undefined,
+        required: false,
+      },
+    ];
+
+    const contacts = await Contact.findAll({
+      where,
+      include,
+      order: [['name', 'ASC']],
+    });
+
+    return contacts;
   }
 }

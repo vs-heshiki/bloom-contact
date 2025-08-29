@@ -57,4 +57,10 @@ export interface IContactRepository {
     email: string;
     phones: string[];
   }): Promise<{ contact: Contact; phones: Phone[] }>;
+  list(filters?: {
+    name?: string;
+    address?: string;
+    email?: string;
+    phone?: string;
+  }): Promise<Contact[]>;
 }
