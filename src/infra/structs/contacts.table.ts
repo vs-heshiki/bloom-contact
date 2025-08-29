@@ -49,3 +49,12 @@ Contact.hasMany(Phone, {
   onDelete: 'CASCADE',
 });
 Phone.belongsTo(Contact, { foreignKey: 'contactId', as: 'contact' });
+
+export interface IContactRepository {
+  create(data: {
+    name: string;
+    address: string;
+    email: string;
+    phones: string[];
+  }): Promise<{ contact: Contact; phones: Phone[] }>;
+}
