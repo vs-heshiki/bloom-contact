@@ -1,6 +1,6 @@
 import { WhereOptions, Op, Includeable } from 'sequelize';
 import { Phone, Contact, IContactRepository } from '../structs';
-import { BadRequest } from '@/errors';
+import { BadRequest, NotFound } from '@/errors';
 
 export class ContactRepository implements IContactRepository {
   async create(data: {
@@ -59,5 +59,13 @@ export class ContactRepository implements IContactRepository {
     });
 
     return contacts;
+  }
+
+  async getById(id: number) {
+    const contact = await Contact.findByPk(id, {
+      include: [{ model: Phone, as: 'phones' }],
+    });
+    if (!contact) throw NotFound('Contact not found');
+    return contact;
   }
 }

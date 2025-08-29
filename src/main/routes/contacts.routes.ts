@@ -6,5 +6,6 @@ const controller = makeContactController();
 
 router.post('/contacts', controller.create.bind(controller));
 router.get('/contacts', controller.list.bind(controller));
+router.get('/contacts/:id', controller.show.bind(controller));
 
 export default router;
