@@ -5,7 +5,11 @@ const env = process.env.NODE_ENV || 'development';
 let sequelize: Sequelize;
 
 if (env === 'test') {
-  sequelize = new Sequelize('sqlite::memory:', { logging: false });
+  sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: ':memory:',
+    logging: false,
+  });
 } else {
   const dialect = (process.env.DB_DIALECT || 'mysql') as any;
   sequelize = new Sequelize(
