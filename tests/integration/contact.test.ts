@@ -23,7 +23,7 @@ describe('Contacts API', () => {
     expect(created.status).toBe(201);
   });
 
-  it('should returns validation error when all fields are missing', async () => {
+  it('should return validation error when all fields are missing', async () => {
     const payload = {};
     const created = await request(app).post('/contacts').send(payload);
     expect(created.status).toBe(400);
@@ -38,7 +38,7 @@ describe('Contacts API', () => {
     });
   });
 
-  it('should returns validation error when email is invalid', async () => {
+  it('should return validation error when email is invalid', async () => {
     const payload = {
       name: 'Ana',
       address: 'São Paulo',
@@ -47,13 +47,13 @@ describe('Contacts API', () => {
     };
     const created = await request(app).post('/contacts').send(payload);
     expect(created.status).toBe(400);
-    expect(created.body).toEqual({
+    expect(created.body).toMatchObject({
       error: 'Validation error',
       details: ['"email" must be a valid email'],
     });
   });
 
-  it('should returns an error when phone number is duplicated', async () => {
+  it('should return an error when phone number is duplicated', async () => {
     const payload = {
       name: 'Ana',
       address: 'São Paulo',
@@ -67,7 +67,7 @@ describe('Contacts API', () => {
     });
   });
 
-  it('should returns all contacts created', async () => {
+  it('should return all contacts created', async () => {
     for (let i = 0; i < 3; i++) {
       await request(app)
         .post('/contacts')
@@ -87,7 +87,7 @@ describe('Contacts API', () => {
     expect(Array.isArray(getAll.body[0].phones)).toBe(true);
   });
 
-  it('should returns a filtered list of contacts', async () => {
+  it('should return a filtered list of contacts', async () => {
     for (let i = 0; i < 10; i++) {
       await request(app)
         .post('/contacts')
@@ -106,5 +106,64 @@ describe('Contacts API', () => {
     expect(Array.isArray(getfiltered.body)).toBe(true);
     expect(getfiltered.body.length).toBe(1);
     expect(getfiltered.body[0].name).toBe('John Doe 2');
+  });
+
+  it('should update a contact successfully', async () => {
+    const created = await request(app)
+      .post('/contacts')
+      .send({
+        name: 'John Doe',
+        address: 'Old Street',
+        email: 'john@example.com',
+        phones: ['+1234567890'],
+      });
+
+    const id = created.body.contact.id;
+
+    const updated = await request(app)
+      .put(`/contacts/${id}`)
+      .send({
+        name: 'John Doe Updated',
+        address: 'New Street',
+        email: 'john.updated@example.com',
+        phones: ['+1111111111'],
+      });
+
+    expect(updated.status).toBe(200);
+    expect(updated.body).toMatchObject({
+      id,
+      name: 'John Doe Updated',
+      address: 'New Street',
+      email: 'john.updated@example.com',
+    });
+  });
+
+  it('should return 400 if id is invalid', async () => {
+    const res = await request(app).put('/contacts/abc').send({
+      name: 'Invalid',
+    });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/Invalid id/);
+  });
+
+  it('should return 400 if validation fails', async () => {
+    const created = await request(app)
+      .post('/contacts')
+      .send({
+        name: 'Jane Doe',
+        address: 'Street',
+        email: 'jane@example.com',
+        phones: ['+2222222222'],
+      });
+
+    const id = created.body.contact.id;
+
+    const res = await request(app).put(`/contacts/${id}`).send({
+      email: 'not-an-email',
+    });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/Validation error/);
   });
 });

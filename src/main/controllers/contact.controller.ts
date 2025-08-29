@@ -66,7 +66,7 @@ export class ContactController {
   async update(req: Request, res: Response, next: NextFunction) {
     try {
       const id = Number(req.params.id);
-      if (Number.isNaN(id)) throw BadRequest('ID inválido');
+      if (Number.isNaN(id)) throw BadRequest('Invalid id');
       const { error, value } = updateContactSchema.validate(req.body, {
         abortEarly: false,
       });
