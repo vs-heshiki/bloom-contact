@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import {
   CreateContactUseCase,
+  DeleteContactUseCase,
   GetContactWithWeatherUseCase,
   ListContactUseCase,
   UpdateContactUseCase,
@@ -17,7 +18,8 @@ export class ContactController {
     private readonly createContactUseCase: CreateContactUseCase,
     private readonly listContactUseCase: ListContactUseCase,
     private readonly getContactWithWeatherUseCase: GetContactWithWeatherUseCase,
-    private readonly updateContactUseCase: UpdateContactUseCase
+    private readonly updateContactUseCase: UpdateContactUseCase,
+    private readonly deleteContactUseCase: DeleteContactUseCase
   ) {}
 
   async create(req: Request, res: Response, next: NextFunction) {
@@ -74,6 +76,17 @@ export class ContactController {
 
       const contact = await this.updateContactUseCase.execute(id, value);
       res.json(contact);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = Number(req.params.id);
+      if (Number.isNaN(id)) throw BadRequest('Invalid id');
+      await this.deleteContactUseCase.execute(id);
+      res.sendStatus(204);
     } catch (err) {
       next(err);
     }

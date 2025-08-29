@@ -68,4 +68,5 @@ export interface IContactRepository {
     id: number,
     data: { name?: string; address?: string; email?: string; phones?: string[] }
   ): Promise<Contact>;
+  delete(id: number): Promise<void>;
 }

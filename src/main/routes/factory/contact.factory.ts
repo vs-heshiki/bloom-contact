@@ -2,6 +2,7 @@ import { ContactController } from '@/main/controllers/contact.controller';
 import { ContactRepository } from '@/infra/repositories';
 import {
   CreateContactUseCase,
+  DeleteContactUseCase,
   GetContactWithWeatherUseCase,
   ListContactUseCase,
   UpdateContactUseCase,
@@ -14,6 +15,7 @@ export function makeContactController() {
   const createContact = new CreateContactUseCase(repository);
   const listContact = new ListContactUseCase(repository);
   const updateContact = new UpdateContactUseCase(repository);
+  const deleteContact = new DeleteContactUseCase(repository);
   const getContactWithWeather = new GetContactWithWeatherUseCase(
     repository,
     weatherService
@@ -23,6 +25,7 @@ export function makeContactController() {
     createContact,
     listContact,
     getContactWithWeather,
-    updateContact
+    updateContact,
+    deleteContact
   );
 }

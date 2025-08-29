@@ -166,4 +166,39 @@ describe('Contacts API', () => {
     expect(res.status).toBe(400);
     expect(res.body.error).toMatch(/Validation error/);
   });
+
+  it('should delete a contact successfully', async () => {
+    const created = await request(app)
+      .post('/contacts')
+      .send({
+        name: 'John Delete',
+        address: 'Some Street',
+        email: 'delete@example.com',
+        phones: ['+1234567890'],
+      });
+
+    const id = created.body.contact.id;
+
+    const deleted = await request(app).delete(`/contacts/${id}`);
+
+    expect(deleted.status).toBe(204);
+
+    const all = await request(app).get('/contacts');
+    const exists = all.body.find((c: any) => c.id === id);
+    expect(exists).toBeUndefined();
+  });
+
+  it('should return 400 if id is invalid', async () => {
+    const res = await request(app).delete('/contacts/abc');
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch('Invalid id');
+  });
+
+  it('should return 404 if contact does not exist', async () => {
+    const res = await request(app).delete('/contacts/9999');
+
+    expect(res.status).toBe(404);
+    expect(res.body.error).toMatch('Contact not found');
+  });
 });

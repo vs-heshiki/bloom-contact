@@ -93,4 +93,9 @@ export class ContactRepository implements IContactRepository {
     });
     return this.getById(id);
   }
+
+  async delete(id: number) {
+    const contact = await this.getById(id);
+    await contact.destroy();
+  }
 }

@@ -8,5 +8,6 @@ router.post('/contacts', controller.create.bind(controller));
 router.get('/contacts', controller.list.bind(controller));
 router.get('/contacts/:id', controller.show.bind(controller));
 router.put('/contacts/:id', controller.update.bind(controller));
+router.delete('/contacts/:id', controller.delete.bind(controller));
 
 export default router;
