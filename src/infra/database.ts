@@ -9,6 +9,10 @@ if (env === 'test') {
     dialect: 'sqlite',
     storage: ':memory:',
     logging: false,
+    define: {
+      timestamps: true,
+      paranoid: true,
+    },
   });
 } else {
   const dialect = (process.env.DB_DIALECT || 'mysql') as any;
@@ -18,7 +22,7 @@ if (env === 'test') {
     process.env.DB_PASS || 'secret',
     {
       host: process.env.DB_HOST || 'localhost',
-      port: Number(process.env.DB_PORT || 3306),
+      port: Number(process.env.DB_PORT || 3307),
       dialect,
       logging: false,
       define: {
