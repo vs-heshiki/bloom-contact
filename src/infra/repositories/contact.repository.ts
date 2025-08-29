@@ -1,5 +1,6 @@
 import { WhereOptions, Op, Includeable } from 'sequelize';
 import { Phone, Contact, IContactRepository } from '../structs';
+import { BadRequest } from '@/errors';
 
 export class ContactRepository implements IContactRepository {
   async create(data: {
@@ -10,7 +11,7 @@ export class ContactRepository implements IContactRepository {
   }) {
     const uniquePhones = Array.from(new Set(data.phones));
     if (uniquePhones.length !== data.phones.length) {
-      throw new Error('Phone numbers must be unique');
+      throw BadRequest('Phone numbers must be unique');
     }
     const contact = await Contact.create(
       {
