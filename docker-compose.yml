@@ -1,0 +1,48 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    env_file: ./.env
+    environment:
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_ROOT_PASSWORD=${DB_PASS}
+    ports:
+      - '3307:3306'
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'mysqladmin ping -h localhost -p$${MYSQL_ROOT_PASSWORD} --silent',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: ./.env
+    environment:
+      PORT: ${PORT}
+      NODE_ENV: development
+      DB_DIALECT: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USER: root
+      DB_PASS: ${DB_PASS}
+      HGBRASIL_KEY: ${HGBRASIL_KEY}
+    ports:
+      - '7545:7545'
+    volumes:
+      - ./:/usr/src/app
+    command: sh -c "npm install && npm run build && npm start"
+
+volumes:
+  db_data:
