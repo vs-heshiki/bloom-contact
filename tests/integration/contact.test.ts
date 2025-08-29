@@ -144,7 +144,7 @@ describe('Contacts API', () => {
     });
 
     expect(res.status).toBe(400);
-    expect(res.body.error).toMatch(/Invalid id/);
+    expect(res.body.error).toMatch('Invalid id');
   });
 
   it('should return 400 if validation fails', async () => {
@@ -164,7 +164,7 @@ describe('Contacts API', () => {
     });
 
     expect(res.status).toBe(400);
-    expect(res.body.error).toMatch(/Validation error/);
+    expect(res.body.error).toMatch('Validation error');
   });
 
   it('should delete a contact successfully', async () => {
