@@ -13,6 +13,8 @@ const unit: Config = {
 
 const integration: Config = {
   displayName: 'integration',
+  collectCoverageFrom: ['<rootDir>/src/**/*.ts', '!<rootDir>/src/main/**'],
+  coverageDirectory: 'coverage',
   testMatch: ['**/tests/integration/*.test.ts'],
   preset: 'ts-jest',
   testEnvironment: 'node',
